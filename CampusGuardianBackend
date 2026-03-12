@@ -1,0 +1,199 @@
+import java.util.*;
+
+/* CO2 - Abstract Data Type (Alert class used to store alert details) */
+class Alert {
+    int alertId;
+    String type;
+    String location;
+    int priority;
+
+    Alert(int id, String t, String l, int p) {
+        alertId = id;
+        type = t;
+        location = l;
+        priority = p;
+    }
+
+    public String toString() {
+        return "Alert ID: " + alertId +
+               " | Type: " + type +
+               " | Location: " + location +
+               " | Priority: " + priority;
+    }
+}
+
+public class CampusGuardianBackend {
+
+    /* CO4 - HashMap used for fast user lookup */
+    static HashMap<Integer,String> users = new HashMap<>();
+
+    /* CO3 - Queue used to process alerts in FIFO order */
+    static Queue<Alert> alertQueue = new LinkedList<>();
+
+    /* CO3 - PriorityQueue used to process highest priority alerts first */
+    static PriorityQueue<Alert> priorityAlerts =
+            new PriorityQueue<>((a,b)->b.priority-a.priority);
+
+    /* CO3 - Stack used to store alert history */
+    static Stack<Alert> alertHistory = new Stack<>();
+
+    /* CO1 - ArrayList used for searching and sorting alerts */
+    static ArrayList<Alert> alertList = new ArrayList<>();
+
+    static Scanner sc = new Scanner(System.in);
+
+    /* CO5 - Add user using HashMap */
+    static void addUser() {
+        System.out.print("Enter User ID: ");
+        int id = sc.nextInt();
+        sc.nextLine();
+
+        System.out.print("Enter User Name: ");
+        String name = sc.nextLine();
+
+        users.put(id, name);
+        System.out.println("User Added Successfully");
+    }
+
+    /* CO5 - Create and store alerts using multiple data structures */
+    static void sendAlert() {
+
+        System.out.print("Enter Alert ID: ");
+        int id = sc.nextInt();
+        sc.nextLine();
+
+        System.out.print("Enter Alert Type (Emergency/Health/Complaint): ");
+        String type = sc.nextLine();
+
+        System.out.print("Enter Location: ");
+        String location = sc.nextLine();
+
+        System.out.print("Enter Priority (1-5): ");
+        int priority = sc.nextInt();
+
+        Alert a = new Alert(id,type,location,priority);
+
+        /* CO3 - Queue insertion */
+        alertQueue.add(a);
+
+        /* CO3 - Priority Queue insertion */
+        priorityAlerts.add(a);
+
+        /* CO3 - Stack push for history */
+        alertHistory.push(a);
+
+        /* CO1 - Stored in ArrayList for search & sort */
+        alertList.add(a);
+
+        System.out.println("Alert Stored Successfully");
+    }
+
+    /* CO3 - Queue operation */
+    static void processAlert() {
+
+        if(alertQueue.isEmpty()) {
+            System.out.println("No alerts available");
+            return;
+        }
+
+        Alert a = alertQueue.poll();
+        System.out.println("Processing Alert:");
+        System.out.println(a);
+    }
+
+    /* CO3 - Priority Queue operation */
+    static void processPriorityAlert() {
+
+        if(priorityAlerts.isEmpty()) {
+            System.out.println("No priority alerts");
+            return;
+        }
+
+        Alert a = priorityAlerts.poll();
+        System.out.println("Processing Priority Alert:");
+        System.out.println(a);
+    }
+
+    /* CO1 - Linear Search */
+    static void searchAlert() {
+
+        System.out.print("Enter Alert ID to search: ");
+        int id = sc.nextInt();
+
+        for(Alert a : alertList) {
+            if(a.alertId == id) {
+                System.out.println("Alert Found:");
+                System.out.println(a);
+                return;
+            }
+        }
+
+        System.out.println("Alert Not Found");
+    }
+
+    /* CO1 - Sorting using Collection sort */
+    static void sortAlerts() {
+
+        Collections.sort(alertList,(a,b)->b.priority-a.priority);
+
+        System.out.println("Alerts Sorted by Priority:");
+
+        for(Alert a : alertList) {
+            System.out.println(a);
+        }
+    }
+
+    /* CO3 - Display stack history */
+    static void viewHistory() {
+
+        if(alertHistory.isEmpty()) {
+            System.out.println("No history");
+            return;
+        }
+
+        System.out.println("Alert History:");
+
+        for(Alert a : alertHistory) {
+            System.out.println(a);
+        }
+    }
+
+    /* CO6 - Complete Data Structure Application */
+    public static void main(String[] args) {
+
+        int choice;
+
+        do {
+
+            System.out.println("\n===== Campus Guardian Backend =====");
+            System.out.println("1. Add User");
+            System.out.println("2. Send Alert");
+            System.out.println("3. Process Alert (Queue)");
+            System.out.println("4. Process Priority Alert");
+            System.out.println("5. Search Alert");
+            System.out.println("6. Sort Alerts");
+            System.out.println("7. View Alert History");
+            System.out.println("8. Exit");
+
+            System.out.print("Enter Choice: ");
+            choice = sc.nextInt();
+
+            switch(choice) {
+
+                case 1: addUser(); break;
+                case 2: sendAlert(); break;
+                case 3: processAlert(); break;
+                case 4: processPriorityAlert(); break;
+                case 5: searchAlert(); break;
+                case 6: sortAlerts(); break;
+                case 7: viewHistory(); break;
+                case 8: System.out.println("Exiting..."); break;
+                default: System.out.println("Invalid Choice");
+
+            }
+
+        } while(choice != 8);
+
+        sc.close();
+    }
+}
